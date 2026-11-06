@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Your Name – Portfolio</title>
+  <meta name="description" content="A simple personal website.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #eef2f6;
+      --ink: #14213d;
+      --muted: #52607a;
+      --accent: #2b50ff;
+      --line: #c9d3e0;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0f1626;
+        --ink: #e8edf6;
+        --muted: #9aa8c2;
+        --accent: #7b93ff;
+        --line: #26324a;
+      }
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Bricolage Grotesque", system-ui, -apple-system, "Segoe UI", sans-serif;
+      font-size: 1.0625rem;
+      line-height: 1.6;
+    }
+    a { color: var(--accent); }
+    a:focus-visible, button:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+    .wrap { max-width: 44rem; margin: 0 auto; padding: 0 1.5rem; }
+
+    header.site {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1.5rem 0;
+    }
+    header.site strong { font-weight: 800; }
+    nav a { margin-left: 1.25rem; color: var(--ink); text-decoration: none; }
+    nav a:hover { color: var(--accent); }
+
+    .hero { padding: 5rem 0 4rem; }
+    .hero h1 {
+      font-size: clamp(2.75rem, 10vw, 5.5rem);
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin: 0 0 1.5rem;
+    }
+    .hero p { max-width: 34rem; color: var(--muted); font-size: 1.25rem; margin: 0 0 2rem; }
+    .btn {
+      display: inline-block; padding: .8rem 1.4rem; border-radius: 999px;
+      background: var(--accent); color: #fff; text-decoration: none; font-weight: 600;
+    }
+    .btn:hover { filter: brightness(1.1); }
+
+    section { padding: 3rem 0; border-top: 1px solid var(--line); }
+    h2 { font-size: 1.75rem; margin: 0 0 1.25rem; letter-spacing: -0.01em; }
+
+    .project { padding: 1rem 0; border-bottom: 1px solid var(--line); }
+    .project:last-child { border-bottom: 0; }
+    .project h3 { margin: 0; font-size: 1.2rem; }
+    .project p { margin: .25rem 0 0; color: var(--muted); }
+
+    footer { padding: 2rem 0 3rem; color: var(--muted); font-size: .95rem; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="site">
+      <strong>Your Name</strong>
+      <nav>
+        <a href="#work">Work</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </header>
+
+    <main>
+      <div class="hero">
+        <h1>Hi, I make useful things for the web.</h1>
+        <p>I'm a developer based in Bengaluru. This is a small site where I share what I'm building.</p>
+        <a class="btn" href="#contact">Get in touch</a>
+      </div>
+
+      <section id="work">
+        <h2>Selected work</h2>
+        <div class="project">
+          <h3>Project One</h3>
+          <p>A short description of what it does and who it helps.</p>
+        </div>
+        <div class="project">
+          <h3>Project Two</h3>
+          <p>Another one-line summary. Link it to your repo or live demo.</p>
+        </div>
+        <div class="project">
+          <h3>Project Three</h3>
+          <p>Replace these with your own projects.</p>
+        </div>
+      </section>
+
+      <section id="about">
+        <h2>About</h2>
+        <p>Write two or three sentences about yourself: what you do, what you enjoy, and what you're learning right now.</p>
+      </section>
+
+      <section id="contact">
+        <h2>Contact</h2>
+        <p>Email me at <a href="mailto:you@example.com">you@example.com</a> or find me on
+          <a href="https://github.com/your-username">GitHub</a>.</p>
+      </section>
+    </main>
+
+    <footer>
+      <span id="year"></span> Your Name. Built with plain HTML and CSS.
+    </footer>
+  </div>
+  <script>
+    document.getElementById("year").textContent = "© " + new Date().getFullYear();
+  </script>
+</body>
+</html>
