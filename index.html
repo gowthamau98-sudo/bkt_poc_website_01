@@ -129,6 +129,28 @@
   </script>
 
 
+	<script>
+		var UTM_KEYS = ["utm_source","utm_medium","utm_campaign","utm_term","utm_content"];
+		
+		(function () {
+		  var p = new URLSearchParams(window.location.search);
+		  UTM_KEYS.forEach(function (k) {
+		    var v = p.get(k);
+		    if (v) { try { sessionStorage.setItem(k, v.slice(0, 255)); } catch (e) {} }
+		  });
+		})();
+		
+		window.addEventListener("onEmbeddedMessagingReady", function () {
+		  var fields = {};
+		  UTM_KEYS.forEach(function (k) {
+		    var v = ""; try { v = sessionStorage.getItem(k) || ""; } catch (e) {}
+		    fields[k] = v;
+		  });
+		  embeddedservice_bootstrap.prechatAPI.setHiddenPrechatFields(fields);
+		});
+	</script>
+
+
 	<script type='text/javascript'>
 	function initEmbeddedMessaging() {
 		try {
