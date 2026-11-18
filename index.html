@@ -130,40 +130,72 @@
 
 
 	<script>
-	  var UTM_KEYS = ["utm_source","utm_medium","utm_campaign","utm_term","utm_content"];
-	
-	  // 1. Check what is captured from the URL when the page loads
-	  (function () {
-	    console.log("Current URL Search String:", window.location.search);
-	    var p = new URLSearchParams(window.location.search);
-	    
-	    UTM_KEYS.forEach(function (k) {
-	      var v = p.get(k);
-	      if (v) {
-	        console.log("Captured UTM from URL ->", k + ":", v);
-	        try { 
-	          sessionStorage.setItem(k, v.slice(0, 255)); 
-	        } catch (e) {
-	          console.error("Failed to save to sessionStorage:", e);
-	        }
-	      }
-	    });
-	  })();
-	
-	  // 2. Check what is actually sent to Salesforce when the chat widget loads
-	  window.addEventListener("onEmbeddedMessagingReady", function () {
-	    var fields = {};
-	    UTM_KEYS.forEach(function (k) {
-	      var v = "";
-	      try { 
-	        v = sessionStorage.getItem(k) || ""; 
-	      } catch (e) {}
-	      fields[k] = v;
-	    });
-	
-	    console.log("Salesforce Embedded Messaging Ready! Sending hidden prechat fields:", fields);
-	    embeddedservice_bootstrap.prechatAPI.setHiddenPrechatFields(fields);
-	  });
+		(function () {
+		  var ASK_LOCATION = true;   // set to false to stop asking visitors for their location
+		  var UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content"];
+		  var LOC = { lat: "loc_lat", lng: "loc_lng", status: "loc_status" };
+		
+		  function get(k) { try { return sessionStorage.getItem(k) || ""; } catch (e) { return ""; } }
+		  function set(k, v) { try { sessionStorage.setItem(k, v); } catch (e) { console.error("sessionStorage failed:", e); } }
+		
+		  // 1) Save the UTM values from the landing URL
+		  console.log("Current URL Search String:", window.location.search);
+		  var params = new URLSearchParams(window.location.search);
+		  UTM_KEYS.forEach(function (k) {
+		    var v = params.get(k);
+		    if (v) {
+		      console.log("Captured UTM from URL ->", k + ":", v);
+		      set(k, v.slice(0, 255));
+		    }
+		  });
+		
+		  // 2) Build the hidden pre-chat values (names must match the channel custom parameters)
+		  function buildFields() {
+		    var f = {};
+		    UTM_KEYS.forEach(function (k) { f[k] = get(k); });
+		    f.location_latitude = get(LOC.lat);
+		    f.location_longitude = get(LOC.lng);
+		    f.location_status = get(LOC.status) || (ASK_LOCATION ? "pending" : "");
+		    return f;
+		  }
+		
+		  var widgetReady = false;
+		  function pushFields() {
+		    if (!widgetReady) { return; }
+		    var fields = buildFields();
+		    console.log("Sending hidden prechat fields:", fields);
+		    try { embeddedservice_bootstrap.prechatAPI.setHiddenPrechatFields(fields); } catch (e) { console.error(e); }
+		  }
+		  window.addEventListener("onEmbeddedMessagingReady", function () {
+		    widgetReady = true;
+		    pushFields();
+		  });
+		
+		  // 3) Ask for the location once per visit (the browser shows its own permission prompt)
+		  if (ASK_LOCATION && !get(LOC.status)) {
+		    if (!window.isSecureContext || !navigator.geolocation) {
+		      console.log("Location not available (needs https and a supporting browser)");
+		      set(LOC.status, "unsupported");
+		    } else {
+		      navigator.geolocation.getCurrentPosition(
+		        function (pos) {
+		          set(LOC.lat, pos.coords.latitude.toFixed(4));
+		          set(LOC.lng, pos.coords.longitude.toFixed(4));
+		          set(LOC.status, "granted");
+		          console.log("Location granted");
+		          pushFields();
+		        },
+		        function (err) {
+		          var code = err && err.code;
+		          set(LOC.status, code === 1 ? "denied" : (code === 3 ? "timeout" : "unavailable"));
+		          console.log("Location not shared, status:", get(LOC.status));
+		          pushFields();
+		        },
+		        { enableHighAccuracy: false, timeout: 10000, maximumAge: 600000 }
+		      );
+		    }
+		  }
+		})();
 	</script>
 
 
